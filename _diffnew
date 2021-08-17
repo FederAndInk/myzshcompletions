@@ -2,7 +2,7 @@
 
 function _diffnew_pacnew_files() {
   local pacnew_files
-  pacnew_files=(${(f)"$(plocate .pacnew)"})
+  pacnew_files=(${(f)"$(plocate .pacnew | grep -v Trash)"})
   _describe -t pacnew_files "pacnew file" pacnew_files
 }
 
