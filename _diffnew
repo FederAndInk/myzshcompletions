@@ -1,0 +1,22 @@
+#compdef diffnew
+
+function _diffnew_pacnew_files() {
+  local pacnew_files
+  pacnew_files=(${(f)"$(plocate .pacnew)"})
+  _describe -t pacnew_files "pacnew file" pacnew_files
+}
+
+function _diffnew_files() {
+  _alternative \
+    '.pacnew file: :_diffnew_pacnew_files' \
+    'file: :_files'
+}
+
+local cmd
+
+cmd="$words[2]"
+
+_arguments -C \
+  '1: :_diffnew_files' \
+  '2: :_command_names -e' #\
+# '*::arguments:{ _comp_priv_prefix=( $cmd -n ${(kv)opt_args[(I)(-[ugHEP]|--(user|group|set-home|preserve-env|preserve-groups))]} ) ; _normal }'
