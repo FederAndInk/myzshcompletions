@@ -1,0 +1,76 @@
+#compdef trash-restore
+# ------------------------------------------------------------------------------
+# Copyright (c) 2016 Github zsh-users - http://github.com/zsh-users
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the zsh-users nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# ------------------------------------------------------------------------------
+# Description
+# -----------
+#
+#  Completion script for trash-restore a tool from trash management package trash-cli (http://code.google.com/p/trash-cli).
+#
+# ------------------------------------------------------------------------------
+# Authors
+# -------
+#
+#  * Jindřich Pilař (https://github.com/JindrichPilar)
+#  * Ludovic Jozeau (https://github.com/FederAndInk)
+#
+# ------------------------------------------------------------------------------
+
+_trash-restore() {
+
+  _arguments -C \
+    '(- : *)--version[Show programs version number and exit]' \
+    '(- : *)'{-h,--help}'[show a help message and exit]' \
+    '--sort[Sort list of restore candidates by given field (default: date)]:sort by:(date path none)' \
+    '1:Restore files from given path instead of current directory:_trash-restore_list_or_files'
+
+}
+
+_trash-restore_list_or_files() {
+  _alternative 'trash-list:trashed file:_trash-restore_trash_list' 'directory::_directories' && return 0
+}
+
+_trash-restore_trash_list() {
+  local -a trash_list
+  local trash_time
+  local tfile_path
+  trash-list | sort -hr | while read; do
+    trash_time=$(printf "%s" $REPLY | cut -d' ' -f-2)
+    tfile_path=$(printf "%s" $REPLY | cut -d' ' -f3-)
+    trash_list+="${${(q)tfile_path}//:/\\:}:${trash_time//:/\\:}"
+  done
+  _describe -t 'trash-list' 'trashed files' trash_list
+}
+
+_trash-restore
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et
